@@ -6,7 +6,8 @@ export function project(point, camera, width, height, focal = 620) {
   const forward = dx * s + dy * c;
   const depth = Math.max(12, forward + (camera.back ?? 90));
   const scale = focal / depth;
-  return { x: width / 2 + lateral * scale, y: height * 0.39 + ((camera.height ?? 112) - (point.z ?? 0)) * scale, scale, depth };
+  const horizon = height * 0.37;
+  return { x: width / 2 + lateral * scale, y: horizon + (camera.height ?? 118) * scale - forward * scale * 0.18 - (point.z ?? 0) * scale, scale, depth };
 }
 
 export function clamp(value, min, max) { return Math.max(min, Math.min(max, value)); }

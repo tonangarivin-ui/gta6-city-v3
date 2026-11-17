@@ -1,6 +1,6 @@
 [
-  { "name": "1-start.jpg", "query": "?shot=start&seed=1" },
-  { "name": "2-drive.jpg", "query": "?shot=drive&seed=1" },
-  { "name": "3-chase.jpg", "query": "?shot=chase&seed=1" },
-  { "name": "4-cruise.jpg", "query": "?shot=cruise&seed=1" }
+  { "name": "1-start.png", "query": "?shot=start&seed=1" },
+  { "name": "2-drive.png", "query": "?shot=drive&seed=1" },
+  { "name": "3-chase.png", "query": "?shot=chase&seed=1" },
+  { "name": "4-cruise.png", "query": "?shot=cruise&seed=1" }
 ]

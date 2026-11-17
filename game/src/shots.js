@@ -11,9 +11,18 @@ export function stageShot(name, state) {
   const shot = staged[name] ?? staged.start;
   Object.assign(state.player, shot);
   state.cars = [
-    { x: 1985, y: shot.y + 340, color: '#e76f51' },
-    { x: 2100, y: shot.y + 565, color: '#f1ca72' },
-    { x: 2220, y: shot.y + 800, color: '#78a6a0' },
+    { x: -58, y: 190, color: '#e76f51' }, { x: 52, y: 270, color: '#f1ca72' },
+    { x: -72, y: 430, color: '#78a6a0' }, { x: 85, y: 565, color: '#e76f51' },
+    { x: -25, y: 720, color: '#f1ca72' },
   ];
+  state.wanted = name === 'chase' ? 3 : 0;
+  state.pedestrians = Array.from({length:11},(_,i)=>({x:-235+i*46,y:120+(i%4)*155}));
+  state.patrols = name === 'chase' ? [{x:-44,y:65,color:'#e7ecea'},{x:42,y:115,color:'#e7ecea'}] : [];
+  state.policeFlash = true;
+  state.shots = name === 'chase' ? .7 : 0;
+  state.time = 2.2;
+  state.mapOpen = false;
+  state.objective = name === 'chase' ? 'Lose the patrol before the Marina Alta bridge.' : 'Meet Ivo at the Mariner Diner.';
+  state.missionStep = name === 'chase' ? '3/5' : '1/5';
   return { screen: name === 'start' ? SCREEN_TITLE : SCREEN_PLAY, best: 0 };
 }

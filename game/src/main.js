@@ -1,7 +1,8 @@
 import { createRenderer, SCREEN_PAUSED, SCREEN_PLAY, SCREEN_TITLE } from './render.js';
 const ACTION_CONFIRM = 1, ACTION_PAUSE = 2;
 const held = new Set();
-const heldKeys = new Set(['ArrowLeft','ArrowRight','KeyA','KeyD','Space','Enter','KeyP','Escape']);
+const heldKeys = new Set(['ArrowLeft','ArrowRight','KeyA','KeyD','KeyW','KeyS','Space','Enter','KeyP','Escape','KeyE','ShiftLeft','ShiftRight','KeyM']);
+// Solara build marker: fixed-step coastal boulevard demo.
 let actions = 0;
 window.addEventListener('keydown', event => {
   if (heldKeys.has(event.code)) event.preventDefault();
@@ -23,7 +24,8 @@ if (!canvas || !status) throw new Error('Game canvas or status region is missing
 const shotName = query.get('shot');
 const world = {
   player: { x: 2048, y: 1500, heading: 0, inVehicle: true },
-  cash: 2500, speed: 0, district: 'OLD PORT', cars: [], time: 0,
+  cash: 2500, speed: 0, district: 'MARINA ALTA', cars: [], time: 0, wanted: 0,
+  objective: 'Meet Ivo at the Mariner Diner.', missionStep: '1/5', pedestrians: [], shots: 0,
 };
 let screen = SCREEN_TITLE, last = performance.now(), accumulator = 0;
 const STEP = 1 / 60;
@@ -38,19 +40,25 @@ function action() {
   if (actions & ACTION_PAUSE && screen === SCREEN_PAUSED) screen = SCREEN_PLAY;
 }
 function update(dt) {
-  const steering = input.direction();
+  const steering = input.direction(), forwardKey = held.has('KeyW') || held.has('ArrowUp'), brake = held.has('KeyS') || held.has('ArrowDown');
   world.time += dt;
   world.player.heading += steering * dt * 1.15;
-  const forward = 85;
-  world.player.x += Math.sin(world.player.heading) * forward * dt;
-  world.player.y += Math.cos(world.player.heading) * forward * dt;
-  world.player.x = clamp(world.player.x, 0, 4096);
-  world.player.y = clamp(world.player.y, 0, 4096);
-  world.speed = Math.round(28 + Math.abs(steering) * 8 + Math.sin(world.time * 1.5) * 3);
-  if (world.player.y < 780) world.district = 'OLD PORT';
-  else if (world.player.y < 2250) world.district = 'CENTRO';
-  else world.district = 'LAS PALMAS';
+  world.speed = clamp(world.speed + (forwardKey ? 48 : brake ? -75 : -10) * dt, 0, 92);
+  const velocity = world.speed * 3;
+  world.player.x = clamp(world.player.x + Math.sin(world.player.heading) * velocity * dt, 0, 4096);
+  world.player.y = clamp(world.player.y + Math.cos(world.player.heading) * velocity * dt, 0, 4096);
+  world.district = world.player.y < 780 ? 'OLD PORT' : world.player.y < 2250 ? 'CENTRO' : 'LAS PALMAS';
   if (world.time % 4 < dt) world.cash += 25;
+  world.cars.forEach(car => { car.y -= dt * (world.speed * .75 + 18); if (car.y < 30) car.y += 1250; });
+  world.pedestrians = Array.from({length:7},(_,i)=>({x:-200+i*60,y:170+i*125}));
+  if (held.has('KeyE')) { world.player.inVehicle = !world.player.inVehicle; held.delete('KeyE'); }
+  if (held.has('KeyM')) { world.mapOpen = !world.mapOpen; held.delete('KeyM'); }
+  if (held.has('ShiftLeft') || held.has('ShiftRight')) world.speed = Math.min(100,world.speed+10*dt);
+  if (held.has('Space') || held.has('Mouse0')) world.shots += dt; else world.shots=0;
+  if (world.shots > .5) world.wanted = Math.min(5,Math.max(world.wanted,1));
+  world.patrols = world.wanted ? [{x:-34,y:80,color:'#e7ecea'},{x:38,y:135,color:'#e7ecea'}] : [];
+  world.policeFlash = Boolean(world.wanted && Math.floor(world.time*2)%2);
+  if (world.time > 18 && world.wanted) world.objective = 'Lose the patrol before the Marina Alta bridge.';
 }
 function frame(now) {
   requestAnimationFrame(frame);
