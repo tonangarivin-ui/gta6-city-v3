@@ -25,7 +25,7 @@ export function createRenderer(canvas) {
   function drawCar(q,color,size){const rw=Math.max(3,Math.min(55,size)),rh=rw*.48;ctx.fillStyle='rgba(4,17,22,.55)';ctx.beginPath();ctx.ellipse(q.x,q.y+rh*.45,rw*.65,rh*.38,0,0,Math.PI*2);ctx.fill();ctx.fillStyle=color;ctx.beginPath();ctx.moveTo(q.x-rw*.55,q.y);ctx.lineTo(q.x-rw*.37,q.y-rh*.48);ctx.lineTo(q.x+rw*.35,q.y-rh*.48);ctx.lineTo(q.x+rw*.58,q.y);ctx.lineTo(q.x+rw*.52,q.y+rh*.22);ctx.lineTo(q.x-rw*.52,q.y+rh*.22);ctx.closePath();ctx.fill();ctx.fillStyle='#b8d4d1';ctx.fillRect(q.x-rw*.27,q.y-rh*.42,rw*.54,rh*.23);}
   function drawWorld(state){
     const player=state.player,camera={x:player.x,y:player.y,heading:player.heading,back:78,height:118};
-    const view=(lateral,forward,z=0)=>point(camera,lateral,forward,z); // world-to-screen projection for every ground object.
+    const projectGround=(lateral,forward,z=0)=>point(camera,lateral,forward,z); // world-to-screen projection for every ground object.
     const horizon=h*.37,sky=ctx.createLinearGradient(0,0,0,horizon);sky.addColorStop(0,'#55b6ce');sky.addColorStop(1,'#ffd08c');ctx.fillStyle=sky;ctx.fillRect(0,0,w,horizon+2);
     const sun=ctx.createRadialGradient(w*.78,h*.19,2,w*.78,h*.19,Math.min(w,h)*.13);sun.addColorStop(0,'rgba(255,244,196,.95)');sun.addColorStop(1,'rgba(255,202,112,0)');ctx.fillStyle=sun;ctx.fillRect(w*.6,0,w*.4,h*.42);
     ctx.fillStyle='#2c7f87';ctx.fillRect(0,horizon,w,h-horizon);

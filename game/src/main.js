@@ -72,7 +72,7 @@ function frame(now) {
 if (shotName) {
   stageShot(shotName, world);
   let paints = 0;
-  const paint = () => { renderer.draw(world, shotName === 'start' ? SCREEN_TITLE : SCREEN_PLAY); if (++paints < 2) requestAnimationFrame(paint); else window.__shotReady = true; };
+  const paint = () => { try { renderer.draw(world, shotName === 'start' ? SCREEN_TITLE : SCREEN_PLAY); } catch (error) { document.body.innerText = error.stack; } if (++paints < 2) requestAnimationFrame(paint); else window.__shotReady = true; };
   requestAnimationFrame(paint);
 } else {
   status.textContent = 'San Telmo. Press Enter to drive.';
